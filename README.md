@@ -25,9 +25,9 @@
       </ul>
     </li>
     <li>
-      <a href="#getting-started">Gallery</a>
+      <a href="#gallery">Gallery</a>
       <ul>
-        <li><a href="#prerequisites">Categories</a></li>
+        <li><a href="#categories">Categories</a></li>
       </ul>
     </li>
     <li><a href="#usage">Visit URL</a></li>
