@@ -1,6 +1,6 @@
-# TwitterAPI-Extraction
+# ML/DS Gallery
 
-<!-- PROJECT LOGO -->
+<!-- MAIN -->
 <br />
 <p align="center">
   <h3 align="center">ML/DS Gallery</h3>
@@ -13,8 +13,6 @@
   
   </p>
 </p>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
