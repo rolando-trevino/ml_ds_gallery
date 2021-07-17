@@ -7,22 +7,28 @@ df = pd.DataFrame()
 
 def write():
     import re
+    from datetime import date
 
     global df
 
-    col1, col2 = st.beta_columns(2)
+    st.write(f"Today is: {date.today()}")
 
-    with col1:
-        if st.button("Download info") and len(df) == 0:
-            df = get_info()
-            df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
-            df['state'] = df['state'].astype(int)
-
-    with col2:
-        if st.button("Read last saved info") and len(df) == 0:
+    if st.button("Run process") and len(df) == 0:
+        try:
             df = pd.read_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv")
             df['state'] = df['state'].astype(int)
-            # st.write(df.head()
+            if pd.to_datetime(df['date'].values[-1]) == date.today():
+                st.success("Data is already up to date")
+            else:
+                df = get_info()
+                df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
+                st.success("Data has been updated")
+                df['state'] = df['state'].astype(int)
+        except:   
+            df = get_info()
+            df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
+            st.success("Data has been updated")
+            df['state'] = df['state'].astype(int)
 
     state_list = [
         "(0): - NACIONAL -",
@@ -60,6 +66,7 @@ def write():
     ]
     
     if len(df) > 0:
+        st.write(f"Data Date: {df['date'].values[-1]}")
         selected_state = st.selectbox("Select state:", state_list, index=0)
         selected_state_int = int(re.findall(r"(\d)", selected_state)[0])
         if selected_state_int != 0:
