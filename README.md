@@ -60,7 +60,7 @@ This application is a portfolio of interesting and fun projects I've worked on, 
 <!-- VISIT URL -->
 ## Visit URL
 
-(Click on this link to visit app deployed in Heroku)[https://ml-ds-gallery.herokuapp.com/]
+<a href="https://ml-ds-gallery.herokuapp.com/">Click on this link to visit app deployed in Heroku</a>
 
 <!-- ROADMAP -->
 ## Roadmap
