@@ -14,6 +14,7 @@ def write():
     st.write(f"Today is: {date.today()}")
 
     if st.button("Run process") and len(df) == 0:
+        df_full = pd.DataFrame()
         try:
             df = pd.read_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv")
             df['state'] = df['state'].astype(int)
@@ -89,15 +90,10 @@ def get_info():
         os.makedirs('data')
 
     with stqdm(range(4), mininterval=1) as pbar:
-        pbar.set_description_str("Trying to open data...")
-        try:
-            df = pd.read_csv("data/gallery/data_visualization/covid_19_mx/data.csv", encoding='utf8')
-            pbar.update(1)
-        except:
-            pbar.set_description_str("Downloading data...")
-            df = read_zip()
-            df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
-            pbar.update(1)
+        pbar.set_description_str("Downloading data...")
+        df = read_zip()
+        # df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
+        pbar.update(1)
 
         pbar.set_description_str("Processing raw data...")
         df = process_df(df)
@@ -112,8 +108,6 @@ def get_info():
         pbar.update(1)
 
         return df_casos_diarios_resumidos
-
-    
 
 
 def read_zip():
