@@ -17,7 +17,7 @@ def main():
     st.set_page_config(
         page_title="ML/DS Gallery",
         page_icon=(":computer:"),
-        layout="wide",
+        layout="centered",
         initial_sidebar_state="auto",
     )
 

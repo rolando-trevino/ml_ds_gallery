@@ -1,10 +1,9 @@
 """Home page shown when the user enters the application"""
-import streamlit as st
 
-
-def hello_world():
-    st.write("Hello world")
+def covid_19_mx():
+    import src.applications.data_visualization.covid_19_mx.covid_19_mx as covid_19_mx
+    covid_19_mx.write()
 
 data_visualization_apps = {
-    "Hello world": hello_world
+    "COVID-19 (Mexico)": covid_19_mx
 }
