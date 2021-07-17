@@ -8,7 +8,7 @@
   <p align="center">
     Welcome to my ML/DS Gallery, a streamlit based portfolio of interesting and fun projects of mine 😎
     <br />
-    <a href="https://github.com/deTECtFakeNews/ml_ds_gallery"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/rolando-trevino/ml_ds_gallery"><strong>Explore the docs »</strong></a>
     <br />
   
   </p>
