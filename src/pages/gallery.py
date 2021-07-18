@@ -11,7 +11,8 @@ categories = {
 
 def write():
     st.write("# ML/DS Gallery - Gallery")
-    selection = st.selectbox("Categories:", list(categories.keys()), index=0)
+    st.sidebar.write("# Gallery")
+    selection = st.sidebar.selectbox("Categories:", list(categories.keys()), index=0)
     page = categories[selection]
 
     with st.spinner(f"Loading {selection} ..."):

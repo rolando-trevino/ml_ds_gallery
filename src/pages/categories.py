@@ -11,6 +11,7 @@ def category_exploratory_analysis():
     app = exploratory_analysis_apps[selection]
 
     with st.spinner(f"Loading {selection} ..."):
+        st.write(f"# {selection}")
         app()
 
 def category_data_visualization():
@@ -19,6 +20,7 @@ def category_data_visualization():
     app = data_visualization_apps[selection]
 
     with st.spinner(f"Loading {selection} ..."):
+        st.write(f"# {selection}")
         app()
 
 def category_natural_language_processing():
@@ -27,6 +29,7 @@ def category_natural_language_processing():
     app = natural_language_processing_apps[selection]
 
     with st.spinner(f"Loading {selection} ..."):
+        st.write(f"# {selection}")
         app()
 
 def category_finance():
@@ -35,6 +38,7 @@ def category_finance():
     app = finance_apps[selection]
 
     with st.spinner(f"Loading {selection} ..."):
+        st.write(f"# {selection}")
         app()
 
 

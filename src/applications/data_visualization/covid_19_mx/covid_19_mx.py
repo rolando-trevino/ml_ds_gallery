@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 pd.options.plotting.backend = "plotly"
+import plotly.express as px
 
 df = pd.DataFrame()
 
@@ -74,12 +75,19 @@ def write():
             df_filtered = df[df['state'] == selected_state_int].copy()
         else:
             df_filtered = df.groupby("date").sum().reset_index()
+
         df_filtered.rename(columns={"date": "Date", "positive": "Positive Cases"}, inplace=True)
-        st.write(df_filtered.plot(x='Date', y='Positive Cases'))
+        # Cases over time
+        fig = px.line(df_filtered, x="Date", y="Positive Cases", title="Cumulative Positive Cases")
+        st.plotly_chart(fig, use_container_width=True)
+
         df_filtered['New Cases'] = df_filtered['Positive Cases'].diff()
-        st.write(df_filtered.plot(x='Date', y='New Cases'))
+        fig = px.line(df_filtered, x="Date", y="New Cases", title="Daily New Cases")
+        st.plotly_chart(fig, use_container_width=True)
+
         df_filtered['Moving Average (7)'] = df_filtered['New Cases'].rolling(window=7).mean()
-        st.write(df_filtered.plot(x='Date', y='Moving Average (7)'))
+        fig = px.line(df_filtered, x="Date", y="Moving Average (7)", title="New Cases Moving Average (7 days)")
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def get_info():

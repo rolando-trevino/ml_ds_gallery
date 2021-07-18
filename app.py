@@ -17,7 +17,7 @@ def main():
     st.set_page_config(
         page_title="ML/DS Gallery",
         page_icon=(":computer:"),
-        layout="centered",
+        layout="wide",
         initial_sidebar_state="auto",
     )
 
@@ -31,12 +31,13 @@ def main():
 
     st.sidebar.write("# Navigation")
     selection = st.sidebar.radio("Go to:", list(PAGES.keys()), index=0)
-    st.sidebar.info("# Author\n\nRolando Trevino")
 
     page = PAGES[selection]
 
     with st.spinner(f"Loading {selection} ..."):
         page.write()
+
+    st.sidebar.info("# Author\n\nRolando Trevino")
 
 
 if __name__ == "__main__":
