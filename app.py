@@ -14,6 +14,19 @@ PAGES = {
 
 
 def main():
+    st.sidebar.write("# Navigation")
+
+    selection = st.sidebar.radio("Go to:", list(PAGES.keys()))
+    page = PAGES[selection]
+
+    with st.spinner(f"Loading {selection} ..."):
+        page.write()
+
+    st.sidebar.write("---")
+    st.sidebar.info("# Author\n\nRolando Trevino")
+
+
+if __name__ == "__main__":
     st.set_page_config(
         page_title="ML/DS Gallery",
         page_icon=(":computer:"),
@@ -23,22 +36,14 @@ def main():
 
     hide_streamlit_style = """
             <style>
-            #MainMenu {visibility: hidden;}
+            #MainMenu {visibility: visible;}
             footer {visibility: hidden;}
             </style>
             """
     st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-    st.sidebar.write("# Navigation")
-    selection = st.sidebar.radio("Go to:", list(PAGES.keys()), index=0)
+    if 'navigation_changed' not in st.session_state and 'navigation_current' not in st.session_state:
+        st.session_state['navigation_changed'] = False
+        st.session_state['navigation_current'] = None
 
-    page = PAGES[selection]
-
-    with st.spinner(f"Loading {selection} ..."):
-        page.write()
-
-    st.sidebar.info("# Author\n\nRolando Trevino")
-
-
-if __name__ == "__main__":
     main()
