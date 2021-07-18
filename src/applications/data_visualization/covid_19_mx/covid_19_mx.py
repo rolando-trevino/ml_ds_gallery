@@ -8,29 +8,30 @@ df = pd.DataFrame()
 
 def write():
     import re
-    from datetime import date
+    from datetime import datetime, date
+    import json
+    from urllib.request import urlopen
 
     global df
 
-    st.write(f"Today is: {date.today()}")
+    st.write(f"Today is: {datetime.date(datetime.now())}")
 
-    if st.button("Run process") and len(df) == 0:
+    check_download = st.checkbox("Download updated info")
+
+    if st.button("Run process"):
         df_full = pd.DataFrame()
-        try:
-            df = pd.read_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv")
-            df['state'] = df['state'].astype(int)
-            if pd.to_datetime(df['date'].values[-1]) == date.today():
-                st.success("Data is already up to date")
-            else:
-                df = get_info()
-                df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
-                st.success("Data has been updated")
-                df['state'] = df['state'].astype(int)
-        except:   
+        if check_download:
             df = get_info()
             df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
-            st.success("Data has been updated")
             df['state'] = df['state'].astype(int)
+            df['date'] = pd.to_datetime(df['date'])
+            df.sort_values(by=['state', 'date'], inplace=True)
+            st.success("Data is now up to date")
+        else:
+            df = pd.read_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv")
+            df['state'] = df['state'].astype(int)
+            df['date'] = pd.to_datetime(df['date'])
+            df.sort_values(by=['state', 'date'], inplace=True)
 
     state_list = [
         "(0): - NACIONAL -",
@@ -68,23 +69,66 @@ def write():
     ]
     
     if len(df) > 0:
-        st.write(f"Data Date: {df['date'].values[-1]}")
+        date_now = datetime.strftime(pd.to_datetime(df['date'].values[-1]), "%Y-%m-%d")
+        st.write(f"Data Date: {date_now}")
+
+        # Overall map
+        with urlopen('https://covid19.sinave.gob.mx/coronavirus/Mexico_estados.json') as response:
+            Mexico = json.load(response) # Javascrip object notation 
+
+        state_id_map = {}
+        for feature in Mexico['features']:
+            id_ = feature['id']
+            estado_ = feature['properties']['ESTADO']
+            state_id_map[id_] = estado_
+
+        df_to_map = df.copy()
+        df_to_map.set_index(['state', 'date'])
+        df_to_map['new cases'] = df_to_map['positive'].diff(1)
+        df_to_map['new cases'] = [x if x >= 0 else 0 for x in df_to_map['new cases']]
+        df_to_map = df_to_map.reset_index().groupby(['state', pd.Grouper(key='date', freq='M')]).sum().reset_index()
+        df_to_map['state_fill'] = [(str(x).zfill(2)) for x in df_to_map['state']]
+        df_to_map['state_name'] = [state_id_map[x] for x in df_to_map['state_fill']]
+        df_to_map['date'] = pd.to_datetime(df_to_map['date'])
+        df_to_map['day'] = df_to_map['date'].dt.day
+        df_to_map['month'] = df_to_map['date'].dt.month
+        df_to_map['year'] = df_to_map['date'].dt.year
+        df_to_map['date'] = [datetime.strftime(date(y, m, d), "%Y-%m-%d") for (y, m, d) in zip(df_to_map['year'], df_to_map['month'], df_to_map['day'])]
+
+        fig = px.choropleth(
+            df_to_map, # database
+            locations = 'state_fill', #define the limits on the map/geography
+            geojson = Mexico, #shape information
+            color = "new cases", #defining the color of the scale through the database
+            hover_name = 'state_name', #the information in the box
+            title = 'COVID-19 Monthly New Cases in Mexico', #title of the map
+            animation_frame  = 'date',
+            width = 1024,
+            height = 768
+        )
+        fig.update_geos(fitbounds = "locations", visible = False)
+        st.plotly_chart(fig, use_container_width=True)
+        
         selected_state = st.selectbox("Select state:", state_list, index=0)
-        selected_state_int = int(re.findall(r"(\d)", selected_state)[0])
+        selected_state_int = int(re.findall(r"(\d+)", selected_state)[0])
+
         if selected_state_int != 0:
             df_filtered = df[df['state'] == selected_state_int].copy()
         else:
-            df_filtered = df.groupby("date").sum().reset_index()
+            df_filtered = df.groupby('date').sum().reset_index()
 
         df_filtered.rename(columns={"date": "Date", "positive": "Positive Cases"}, inplace=True)
+
         # Cases over time
         fig = px.line(df_filtered, x="Date", y="Positive Cases", title="Cumulative Positive Cases")
         st.plotly_chart(fig, use_container_width=True)
 
-        df_filtered['New Cases'] = df_filtered['Positive Cases'].diff()
+        # New cases
+        df_filtered['New Cases'] = df_filtered['Positive Cases'].diff(1)
         fig = px.line(df_filtered, x="Date", y="New Cases", title="Daily New Cases")
         st.plotly_chart(fig, use_container_width=True)
 
+        # New cases moving average of 7 days
         df_filtered['Moving Average (7)'] = df_filtered['New Cases'].rolling(window=7).mean()
         fig = px.line(df_filtered, x="Date", y="Moving Average (7)", title="New Cases Moving Average (7 days)")
         st.plotly_chart(fig, use_container_width=True)
@@ -137,7 +181,7 @@ def read_zip():
             return df
 
 def process_df(df):
-    df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ].head()
+    # df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ].head()
     df['FECHA_DEF'] = [ '2050-01-01' if x == '9999-99-99' else x for x in df['FECHA_DEF'] ]
     df['FECHA_ACTUALIZACION'] = pd.to_datetime(df['FECHA_ACTUALIZACION'])
     df['FECHA_INGRESO'] = pd.to_datetime(df['FECHA_INGRESO'])
@@ -157,7 +201,7 @@ def process_entidades(df):
     import functools
     import operator
 
-    df_entidad = df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ]
+    df_entidad = df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ].copy()
     df_entidad = df_entidad[['FECHA_SINTOMAS', 'ENTIDAD_RES']]
     temporal = df_entidad.groupby(['ENTIDAD_RES'])['FECHA_SINTOMAS']
     df_entidad = df_entidad.assign(min = temporal.transform(min))
@@ -173,7 +217,7 @@ def process_entidades(df):
     Fecha_Maxima = df.loc[1,]['FECHA_ACTUALIZACION']
 
     for i in range(0,32):
-        ListaFechas = (pd.date_range(start=pd.to_datetime(df_entidad.loc[i,]['min']), end = pd.to_datetime(Fecha_Maxima))).date
+        ListaFechas = (pd.date_range(start=pd.to_datetime("1/1/2020"), end = pd.to_datetime(Fecha_Maxima))).date
         ListaEntidades = [i + 1] * len(ListaFechas)
         ListaFechasFixed.append(ListaFechas)
         ListaEntidadesFixed.append(ListaEntidades)

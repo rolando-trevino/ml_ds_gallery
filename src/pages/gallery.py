@@ -32,7 +32,6 @@ def write():
             select_application = st.sidebar.selectbox("Applications:", list(CATEGORIES[select_category].keys()))
 
         if select_application != None:
-            st.write(f"{select_application}")
             page = CATEGORIES[select_category][select_application]
             
             with st.spinner(f"Loading {select_application} ..."):
