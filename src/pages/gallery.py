@@ -20,20 +20,24 @@ def write():
     else:
         st.session_state['navigation_changed'] = False
 
+    st.write("# ML/DS Gallery - Gallery")
     st.sidebar.write("# Gallery")
     select_category = st.sidebar.selectbox("Categories:", list(CATEGORIES.keys()), index=0)
 
-    if st.session_state['navigation_changed'] == True:
+    if select_category != list(CATEGORIES.keys())[0]:
+        if st.session_state['navigation_changed'] == True:
+            select_application = st.sidebar.selectbox("Applications:", [])
+            st.session_state['navigation_changed'] = False
+        else:
+            select_application = st.sidebar.selectbox("Applications:", list(CATEGORIES[select_category].keys()))
+
+        if select_application != None:
+            st.write(f"{select_application}")
+            page = CATEGORIES[select_category][select_application]
+            
+            with st.spinner(f"Loading {select_application} ..."):
+                st.write(f"## {select_application}")
+                page()
+    else:
         select_application = st.sidebar.selectbox("Applications:", [])
         st.session_state['navigation_changed'] = False
-    else:
-        select_application = st.sidebar.selectbox("Applications:", list(CATEGORIES[select_category].keys()))
-
-    st.write("# ML/DS Gallery - Gallery")
-    if select_application != None:
-        page = CATEGORIES[select_category][select_application]
-        
-        with st.spinner(f"Loading {select_application} ..."):
-            st.write(f"## {select_application}")
-            st.write("---")
-            page()
