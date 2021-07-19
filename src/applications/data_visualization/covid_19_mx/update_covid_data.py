@@ -1,4 +1,8 @@
 import pandas as pd
+import os
+
+if not os.path.exists('data'):
+    os.makedirs('data')
 
 def read_zip():
     #!/usr/bin/env python3
@@ -104,16 +108,10 @@ def casos_diarios_estado(df, df_entidad_fecha):
 
     return df_casos_diarios_resumidos
 
-if __name__ == "__main__":
-    import os
+df = read_zip()
+# df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
 
-    if not os.path.exists('data'):
-        os.makedirs('data')
-
-    df = read_zip()
-    # df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
-
-    df = process_df(df)
-    df_entidad_fecha = process_entidades(df)
-    df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
-    df_casos_diarios_resumidos.to_csv("per_state.csv", index=False)
+df = process_df(df)
+df_entidad_fecha = process_entidades(df)
+df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
+df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
