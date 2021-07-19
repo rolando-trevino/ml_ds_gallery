@@ -53,6 +53,11 @@ This application is a portfolio of interesting and fun projects I've worked on, 
 
 * Exploratory Analysis (EDA)
 * Data Visualization
+  * **COVID-19 (Mexico)**
+    
+    Simple and easy to interpret dashboard showing new cases over a map, as well as graphs representing: total cases, new cases by day, and new cases by day (moving average of 7 days).
+    
+    Data corresponding to this app is maintained through Github Actions, via daily download of information from [Mexico's government source for COVID-19](https://www.gob.mx/salud/documentos/datos-abiertos-152127)
 * Natural Language Processing (NLP)
 * Finance
 * More to come...
