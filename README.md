@@ -3,6 +3,10 @@
 <!-- MAIN -->
 <br />
 <p align="center">
+  <a href="https://github.com/rolando-trevino/ml_ds_gallery" align="center">
+    <img src="https://raw.githubusercontent.com/rolando-trevino/ml_ds_gallery/main/img/header.png" alt="Logo" width="380" height="120">
+  </a>
+  
   <h3 align="center">ML/DS Gallery</h3>
 
   <p align="center">
