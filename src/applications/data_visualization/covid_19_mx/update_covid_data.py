@@ -108,10 +108,12 @@ def casos_diarios_estado(df, df_entidad_fecha):
 
     return df_casos_diarios_resumidos
 
-df = read_zip()
+#df = read_zip()
 # df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
 
-df = process_df(df)
-df_entidad_fecha = process_entidades(df)
-df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
-df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
+#df = process_df(df)
+#df_entidad_fecha = process_entidades(df)
+#df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
+#df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
+df = pd.DataFrame()
+df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state_empty.csv")
