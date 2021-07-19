@@ -24,7 +24,7 @@ def main():
 
     st.sidebar.write("---")
     st.sidebar.write("# About")
-    st.sidebar.info("Author: Rolando Trevino\n\nRepository: [ml-ds-gallery](https://github.com/rolando-trevino/ml_ds_gallery)")
+    st.sidebar.info("Author: Rolando Treviño Lozano\n\nRepository: [ml-ds-gallery](https://github.com/rolando-trevino/ml_ds_gallery)")
 
 
 if __name__ == "__main__":
