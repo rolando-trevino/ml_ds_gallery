@@ -15,6 +15,14 @@ def write():
 
     global df
 
+    st.markdown("""
+    Simple and easy to interpret dashboard showing new cases over a map, as well as graphs representing: total cases, new cases by day, and new cases by day 
+    (moving average of 7 days).
+    
+    Data corresponding to this app is maintained through Github Actions, via daily download of information from 
+    [Mexico's government source for COVID-19](https://www.gob.mx/salud/documentos/datos-abiertos-152127).
+    """)
+
     if len(df) == 0:
         df = pd.read_csv("https://raw.githubusercontent.com/rolando-trevino/ml_ds_gallery/main/data/gallery/data_visualization/covid_19_mx/per_state.csv")
         df['state'] = df['state'].astype(int)
