@@ -1,17 +1,17 @@
 import pandas as pd
+import numpy as np
 import os
+from io import BytesIO
+from zipfile import ZipFile
+import requests
+import functools
+import operator
 
-if not os.path.exists('data'):
-    os.makedirs('data')
+if not os.path.exists('data/gallery/data_visualization/covid_19_mx'):
+    os.makedirs('data/gallery/data_visualization/covid_19_mx')
 
 def read_zip():
     #!/usr/bin/env python3
-
-    from csv import DictReader
-    from io import TextIOWrapper, BytesIO
-    from zipfile import ZipFile
-
-    import requests
 
     url = "http://datosabiertos.salud.gob.mx/gobmx/salud/datos_abiertos/datos_abiertos_covid19.zip"
     r = requests.get(url)
@@ -40,9 +40,6 @@ def process_df(df):
     return df
 
 def process_entidades(df):
-    import functools
-    import operator
-
     df_entidad = df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ].copy()
     df_entidad = df_entidad[['FECHA_SINTOMAS', 'ENTIDAD_RES']]
     temporal = df_entidad.groupby(['ENTIDAD_RES'])['FECHA_SINTOMAS']
@@ -75,8 +72,6 @@ def process_entidades(df):
 
 
 def casos_diarios_estado(df, df_entidad_fecha):
-    import numpy as np
-
     df_opt = df[['CLASIFICACION_FINAL', 'FECHA_SINTOMAS', 'Fecha_Recuperacion', 'Fecha_Muerte', 'ENTIDAD_RES']].copy()
     df_opt['nuevos_casos'] = [0 for x in df_opt['CLASIFICACION_FINAL']]
     df_opt['nuevos_casos'] = [ 1 if ((clasificacion in [1, 2, 3]) & ((frecuperacion is not None) | (fmuerte is not None))) else 0 for clasificacion, frecuperacion, fmuerte in zip(df_opt['CLASIFICACION_FINAL'], df_opt['Fecha_Recuperacion'], df_opt['Fecha_Muerte']) ]
@@ -108,12 +103,9 @@ def casos_diarios_estado(df, df_entidad_fecha):
 
     return df_casos_diarios_resumidos
 
-#df = read_zip()
-# df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
-
-#df = process_df(df)
-#df_entidad_fecha = process_entidades(df)
-#df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
-#df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
-df = pd.DataFrame()
-df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state_empty.csv")
+df = read_zip()
+df = process_df(df)
+df_entidad_fecha = process_entidades(df)
+df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
+print(f"{len(df)=}")
+df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
