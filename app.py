@@ -23,14 +23,15 @@ def main():
         page.write()
 
     st.sidebar.write("---")
-    st.sidebar.info("# Author\n\nRolando Trevino")
+    st.sidebar.write("# About")
+    st.sidebar.info("Author: Rolando Trevino\n\nRepository: [ml-ds-gallery](https://github.com/rolando-trevino/ml_ds_gallery)")
 
 
 if __name__ == "__main__":
     st.set_page_config(
         page_title="ML/DS Gallery",
         page_icon=(":computer:"),
-        layout="wide",
+        layout="centered",
         initial_sidebar_state="auto",
     )
 

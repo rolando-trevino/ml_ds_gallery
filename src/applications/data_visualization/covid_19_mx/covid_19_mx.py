@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 pd.options.plotting.backend = "plotly"
 import plotly.express as px
+import plotly.graph_objects as go
 
 df = pd.DataFrame()
 
@@ -107,6 +108,10 @@ def write():
             height = 768
         )
         fig.update_geos(fitbounds = "locations", visible = False)
+        last_frame_num = len(fig.frames) -1
+        fig.layout['sliders'][0]['active'] = last_frame_num
+        fig = go.Figure(data=fig['frames'][-1]['data'], frames=fig['frames'], layout=fig.layout)
+        # fig.update_layout({'plot_bgcolor': 'rgba(0, 0, 0, 0)', 'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
         st.plotly_chart(fig, use_container_width=True)
         
         selected_state = st.selectbox("Select state:", state_list, index=0)

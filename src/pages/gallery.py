@@ -14,13 +14,26 @@ CATEGORIES = {
 }
 
 def write():
+
+    st.markdown(
+    f"""
+    <style>
+        .reportview-container .main .block-container{{
+            {f"max-width: 95%"}
+        }}
+    </style>
+    """,
+            unsafe_allow_html=True,
+    )
+
     if st.session_state['navigation_current'] != "Gallery":
         st.session_state['navigation_current'] = "Gallery"
         st.session_state['navigation_changed'] = True
     else:
         st.session_state['navigation_changed'] = False
 
-    st.write("# ML/DS Gallery - Gallery")
+    st.title("ML/DS Gallery - Gallery")
+    st.write("---")
     st.sidebar.write("# Gallery")
     select_category = st.sidebar.selectbox("Categories:", list(CATEGORIES.keys()), index=0)
 
