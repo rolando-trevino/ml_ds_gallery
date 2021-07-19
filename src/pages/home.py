@@ -14,6 +14,13 @@ def write():
 
     st.title("ML/DS Gallery - Home")
     st.write("---")
+    st.markdown("""
+    <p align="center">
+        <a href="https://github.com/rolando-trevino/ml_ds_gallery" align="center">
+        <img src="https://raw.githubusercontent.com/rolando-trevino/ml_ds_gallery/main/img/header.png" alt="Logo" width="380" height="120">
+        </a>
+    </p>
+    """, unsafe_allow_html=True)
     st.subheader("Welcome!")
     st.markdown("""
     This web application is set to gather fun and interesting projects of mine where I've applied machine learning and data science techniques
