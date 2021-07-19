@@ -116,4 +116,4 @@ if __name__ == "__main__":
     df = process_df(df)
     df_entidad_fecha = process_entidades(df)
     df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
-    df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
+    df_casos_diarios_resumidos.to_csv("per_state.csv", index=False)
