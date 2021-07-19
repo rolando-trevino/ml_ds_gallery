@@ -15,6 +15,8 @@ def get_info():
 
     df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
 
+    print("010101010101010")
+
     return df_casos_diarios_resumidos
 
 
