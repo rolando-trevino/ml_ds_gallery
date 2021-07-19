@@ -6,16 +6,16 @@ def get_info():
     if not os.path.exists('data'):
         os.makedirs('data')
 
-        df = read_zip()
-        # df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
+    df = read_zip()
+    # df.to_csv("data/gallery/data_visualization/covid_19_mx/data.csv", index=False)
 
-        df = process_df(df)
+    df = process_df(df)
 
-        df_entidad_fecha = process_entidades(df)
+    df_entidad_fecha = process_entidades(df)
 
-        df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
+    df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
 
-        return df_casos_diarios_resumidos
+    return df_casos_diarios_resumidos
 
 
 def read_zip():
@@ -125,3 +125,4 @@ def casos_diarios_estado(df, df_entidad_fecha):
 if __name__ == "__main__":
     df = get_info()
     df.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
+    
