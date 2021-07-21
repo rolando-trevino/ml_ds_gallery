@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     hide_streamlit_style = """
             <style>
-            #MainMenu {visibility: visible;}
+            #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             </style>
             """
