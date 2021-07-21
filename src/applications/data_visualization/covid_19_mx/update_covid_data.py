@@ -20,6 +20,7 @@ def read_zip():
         print(name)
         with zip_ref.open(name) as file_contents:
             df = pd.read_csv(file_contents, encoding="utf8")
+            df = df[['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES']]
             return df
 
 def process_df(df):
@@ -103,9 +104,14 @@ def casos_diarios_estado(df, df_entidad_fecha):
 
     return df_casos_diarios_resumidos
 
+print("read_zip...")
 df = read_zip()
+print("process_df...")
 df = process_df(df)
+print("process_entidades...")
 df_entidad_fecha = process_entidades(df)
+print("casos_diarios_estado...")
 df_casos_diarios_resumidos = casos_diarios_estado(df, df_entidad_fecha)
 print(f"{len(df_casos_diarios_resumidos)=}")
+print("to_csv...")
 df_casos_diarios_resumidos.to_csv("data/gallery/data_visualization/covid_19_mx/per_state.csv", index=False)
