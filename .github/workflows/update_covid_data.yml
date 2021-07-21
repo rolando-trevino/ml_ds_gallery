@@ -2,7 +2,7 @@ name: update_covid_data
 
 on:
   schedule:
-    - cron: '0 18 * * *' # runs at 12:00 UTC everyday
+    - cron: '0 1 * * *' # runs at 01:00 UTC everyday
 
 jobs:
   build:
@@ -33,7 +33,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git commit -m "update data" -a
+          git commit -m "updated automatically via Github Actions" -a
       - name: push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
