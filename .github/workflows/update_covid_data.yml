@@ -2,7 +2,7 @@ name: update_covid_data
 
 on:
   schedule:
-    - cron: '0 23 * * *' # runs at 23:00 UTC everyday
+    - cron: '0 1 * * *' # runs at 01:00 UTC everyday
 
 jobs:
   build:
