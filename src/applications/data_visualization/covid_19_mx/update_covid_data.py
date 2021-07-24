@@ -13,15 +13,16 @@ if not os.path.exists('data/gallery/data_visualization/covid_19_mx'):
 def read_zip():
     #!/usr/bin/env python3
 
-    url = "http://datosabiertos.salud.gob.mx/gobmx/salud/datos_abiertos/datos_abiertos_covid19.zip"
-    r = requests.get(url)
-    zip_ref = ZipFile(BytesIO(r.content))
-    for name in zip_ref.namelist():
-        print(name)
-        with zip_ref.open(name) as file_contents:
-            df = pd.read_csv(file_contents, encoding="utf8")
-            df = df[['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES']]
-            return df
+    #url = "http://datosabiertos.salud.gob.mx/gobmx/salud/datos_abiertos/datos_abiertos_covid19.zip"
+    #r = requests.get(url)
+    #zip_ref = ZipFile(BytesIO(r.content))
+    #for name in zip_ref.namelist():
+    #    print(name)
+    #    with zip_ref.open(name) as file_contents:
+    #        df = pd.read_csv(file_contents, encoding="utf8", usecols = lambda x:x.upper() in ['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES'])
+    #        return df
+    df = pd.read_csv('210722COVID19MEXICO.csv', encoding="utf8", usecols = lambda x:x.upper() in ['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES'])
+    return df
 
 def process_df(df):
     # df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ].head()
@@ -73,36 +74,58 @@ def process_entidades(df):
 
 
 def casos_diarios_estado(df, df_entidad_fecha):
-    df_opt = df[['CLASIFICACION_FINAL', 'FECHA_SINTOMAS', 'Fecha_Recuperacion', 'Fecha_Muerte', 'ENTIDAD_RES']].copy()
-    df_opt['nuevos_casos'] = [0 for x in df_opt['CLASIFICACION_FINAL']]
-    df_opt['nuevos_casos'] = [ 1 if ((clasificacion in [1, 2, 3]) & ((frecuperacion is not None) | (fmuerte is not None))) else 0 for clasificacion, frecuperacion, fmuerte in zip(df_opt['CLASIFICACION_FINAL'], df_opt['Fecha_Recuperacion'], df_opt['Fecha_Muerte']) ]
-    
-    df_casos_diarios = df_opt[['ENTIDAD_RES', 'FECHA_SINTOMAS', 'nuevos_casos']].copy()
-    df_casos_diarios.set_index(['ENTIDAD_RES', 'FECHA_SINTOMAS'], inplace=True)
-    df_casos_diarios.sort_index(inplace=True)
+    df_opt = df[['CLASIFICACION_FINAL', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'Fecha_Recuperacion', 'Fecha_Muerte', 'ENTIDAD_RES']].copy()
+    df_opt['nuevos_casos_sintomas'] = [0 for x in df_opt['CLASIFICACION_FINAL']]
+    df_opt['nuevos_casos_sintomas'] = [ 1 if ((clasificacion in [1, 2, 3]) & ((frecuperacion is not None) | (fmuerte is not None))) else 0 for clasificacion, frecuperacion, fmuerte in zip(df_opt['CLASIFICACION_FINAL'], df_opt['Fecha_Recuperacion'], df_opt['Fecha_Muerte']) ]
+    df_opt['nuevos_casos_confirmados'] = [ 1 if ((clasificacion in [1, 2, 3]) & ((frecuperacion is not None) | (fmuerte is not None))) else 0 for clasificacion, frecuperacion, fmuerte in zip(df_opt['CLASIFICACION_FINAL'], df_opt['Fecha_Recuperacion'], df_opt['Fecha_Muerte']) ]
 
-    df_casos_diarios_resumidos = df_casos_diarios.groupby(level=[0,1]).sum().copy()
-    df_casos_diarios_resumidos = df_casos_diarios_resumidos[df_casos_diarios_resumidos['nuevos_casos'] != 0]
+    df_casos_sintomas = df_opt[['ENTIDAD_RES', 'FECHA_SINTOMAS', 'nuevos_casos_sintomas']].copy()
+    df_casos_sintomas.set_index(['ENTIDAD_RES', 'FECHA_SINTOMAS'], inplace=True)
+    df_casos_sintomas.sort_index(inplace=True)
+    df_casos_sintomas_resumidos = df_casos_sintomas.groupby(level=[0,1]).sum().copy()
+    df_casos_sintomas_resumidos = df_casos_sintomas_resumidos[df_casos_sintomas_resumidos['nuevos_casos_sintomas'] != 0]
+    temp = df_entidad_fecha.copy()
+    temp['nuevos_casos_sintomas'] = [0 for x in df_entidad_fecha['ENTIDAD_RES']]
+    temp.columns = ['ENTIDAD_RES', 'FECHA_SINTOMAS', 'nuevos_casos_sintomas']
+    temp.set_index(['ENTIDAD_RES', 'FECHA_SINTOMAS'], inplace=True)
+    df_casos_sintomas_resumidos = df_casos_sintomas_resumidos.join(temp, how='outer', lsuffix='_orig', rsuffix='_calendario')
+    df_casos_sintomas_resumidos['nuevos_casos_sintomas'] = [orig if (~np.isnan(orig)) else calendario for orig, calendario in zip(df_casos_sintomas_resumidos['nuevos_casos_sintomas_orig'], df_casos_sintomas_resumidos['nuevos_casos_sintomas_calendario'])]
+    del df_casos_sintomas_resumidos['nuevos_casos_sintomas_orig']
+    del df_casos_sintomas_resumidos['nuevos_casos_sintomas_calendario']
+    df_casos_sintomas_resumidos = df_casos_sintomas_resumidos.groupby(level=0)['nuevos_casos_sintomas'].cumsum()
+    df_casos_sintomas_resumidos.columns = []
+    df_casos_sintomas_resumidos = pd.DataFrame(df_casos_sintomas_resumidos)
+    df_casos_sintomas_resumidos.reset_index(inplace=True)
+    df_casos_sintomas_resumidos.columns = ['state', 'date', 'positive_symptoms']
 
-    df_entidad_fecha['nuevos_casos'] = [0 for x in df_entidad_fecha['ENTIDAD_RES']]
-    df_entidad_fecha.columns = ['ENTIDAD_RES', 'FECHA_SINTOMAS', 'nuevos_casos']
-    df_entidad_fecha.set_index(['ENTIDAD_RES', 'FECHA_SINTOMAS'], inplace=True)
+    df_casos_confirmados = df_opt[['ENTIDAD_RES', 'FECHA_INGRESO', 'nuevos_casos_confirmados']].copy()
+    df_casos_confirmados.set_index(['ENTIDAD_RES', 'FECHA_INGRESO'], inplace=True)
+    df_casos_confirmados.sort_index(inplace=True)
+    df_casos_confirmados_resumidos = df_casos_confirmados.groupby(level=[0,1]).sum().copy()
+    df_casos_confirmados_resumidos = df_casos_confirmados_resumidos[df_casos_confirmados_resumidos['nuevos_casos_confirmados'] != 0]
+    temp = df_entidad_fecha.copy()
+    temp['nuevos_casos_confirmados'] = [0 for x in df_entidad_fecha['ENTIDAD_RES']]
+    temp.columns = ['ENTIDAD_RES', 'FECHA_INGRESO', 'nuevos_casos_confirmados']
+    temp.set_index(['ENTIDAD_RES', 'FECHA_INGRESO'], inplace=True)
+    df_casos_confirmados_resumidos = df_casos_confirmados_resumidos.join(temp, how='outer', lsuffix='_orig', rsuffix='_calendario')
+    df_casos_confirmados_resumidos['nuevos_casos_confirmados'] = [orig if (~np.isnan(orig)) else calendario for orig, calendario in zip(df_casos_confirmados_resumidos['nuevos_casos_confirmados_orig'], df_casos_confirmados_resumidos['nuevos_casos_confirmados_calendario'])]
+    del df_casos_confirmados_resumidos['nuevos_casos_confirmados_orig']
+    del df_casos_confirmados_resumidos['nuevos_casos_confirmados_calendario']
+    df_casos_confirmados_resumidos = df_casos_confirmados_resumidos.groupby(level=0)['nuevos_casos_confirmados'].cumsum()
+    df_casos_confirmados_resumidos.columns = []
+    df_casos_confirmados_resumidos = pd.DataFrame(df_casos_confirmados_resumidos)
+    df_casos_confirmados_resumidos.reset_index(inplace=True)
+    df_casos_confirmados_resumidos.columns = ['state', 'date', 'positive_confirmed']
 
-    df_casos_diarios_resumidos = df_casos_diarios_resumidos.join(df_entidad_fecha, how='outer', lsuffix='_orig', rsuffix='_calendario')
-    df_casos_diarios_resumidos['nuevos_casos'] = [orig if (~np.isnan(orig)) else calendario for orig, calendario in zip(df_casos_diarios_resumidos['nuevos_casos_orig'], df_casos_diarios_resumidos['nuevos_casos_calendario'])]
+    df_casos_resumidos = pd.DataFrame()
+    df_casos_resumidos['state'] = df_casos_confirmados_resumidos['state']
+    df_casos_resumidos['date'] = df_casos_confirmados_resumidos['date']
+    df_casos_resumidos['positive_symptoms'] = df_casos_sintomas_resumidos['positive_symptoms']
+    df_casos_resumidos['positive_confirmed'] = df_casos_confirmados_resumidos['positive_confirmed']
 
-    del df_casos_diarios_resumidos['nuevos_casos_orig']
-    del df_casos_diarios_resumidos['nuevos_casos_calendario']
+    df_casos_resumidos.columns = ['state', 'date', 'positive_symptoms', 'positive_confirmed']
 
-    df_casos_diarios_resumidos = df_casos_diarios_resumidos.groupby(level=0)['nuevos_casos'].cumsum()
-    df_casos_diarios_resumidos.columns = []
-    df_casos_diarios_resumidos = pd.DataFrame(df_casos_diarios_resumidos)
-
-    df_casos_diarios_resumidos.reset_index(inplace=True)
-
-    df_casos_diarios_resumidos.columns = ['state', 'date', 'positive']
-
-    return df_casos_diarios_resumidos
+    return df_casos_resumidos
 
 print("read_zip...")
 df = read_zip()
