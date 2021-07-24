@@ -13,16 +13,14 @@ if not os.path.exists('data/gallery/data_visualization/covid_19_mx'):
 def read_zip():
     #!/usr/bin/env python3
 
-    #url = "http://datosabiertos.salud.gob.mx/gobmx/salud/datos_abiertos/datos_abiertos_covid19.zip"
-    #r = requests.get(url)
-    #zip_ref = ZipFile(BytesIO(r.content))
-    #for name in zip_ref.namelist():
-    #    print(name)
-    #    with zip_ref.open(name) as file_contents:
-    #        df = pd.read_csv(file_contents, encoding="utf8", usecols = lambda x:x.upper() in ['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES'])
-    #        return df
-    df = pd.read_csv('210722COVID19MEXICO.csv', encoding="utf8", usecols = lambda x:x.upper() in ['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES'])
-    return df
+    url = "http://datosabiertos.salud.gob.mx/gobmx/salud/datos_abiertos/datos_abiertos_covid19.zip"
+    r = requests.get(url)
+    zip_ref = ZipFile(BytesIO(r.content))
+    for name in zip_ref.namelist():
+        print(name)
+        with zip_ref.open(name) as file_contents:
+            df = pd.read_csv(file_contents, encoding="utf8", usecols = lambda x:x.upper() in ['FECHA_DEF', 'FECHA_ACTUALIZACION', 'FECHA_INGRESO', 'FECHA_SINTOMAS', 'CLASIFICACION_FINAL', 'ENTIDAD_RES'])
+            return df
 
 def process_df(df):
     # df[(df['CLASIFICACION_FINAL'] == 1) | (df['CLASIFICACION_FINAL'] == 2) | (df['CLASIFICACION_FINAL'] == 3) ].head()
