@@ -102,7 +102,8 @@ def write():
             title = 'COVID-19 Cases in Mexico Through Time', #title of the map
             animation_frame  = 'Date',
             width = 1024,
-            height = 768
+            height = 768,
+            color_continuous_scale='temps'
         )
 
         fig.update_geos(fitbounds = "locations", visible = False)
