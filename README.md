@@ -69,8 +69,6 @@ This application is a portfolio of interesting and fun projects I've worked on, 
 <!-- VISIT URL -->
 ## Visit URL
 
-Note: Due to computational resources management, deployed app may differ from this repo.
-
 <a href="https://ml-ds-gallery.herokuapp.com/">Click on this link to visit app deployed in Heroku</a>
 
 <!-- ROADMAP -->
