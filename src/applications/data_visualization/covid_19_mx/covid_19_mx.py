@@ -92,7 +92,7 @@ def write():
         df_to_map['month'] = df_to_map['date'].dt.month
         df_to_map['year'] = df_to_map['date'].dt.year
         df_to_map['Date'] = [datetime.strftime(date(y, m, d), "%Y-%m-%d") for (y, m, d) in zip(df_to_map['year'], df_to_map['month'], df_to_map['day'])]
-
+        # to commit
         fig = px.choropleth(
             df_to_map, # database
             locations = 'State ID', #define the limits on the map/geography
