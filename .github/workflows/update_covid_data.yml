@@ -15,7 +15,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x' # install the python version needed
+          python-version: '3.7.12' # install the python version needed
           
       - name: install python packages
         run: |
@@ -26,7 +26,7 @@ jobs:
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
-        run: python src/applications/data_visualization/covid_19_mx/update_covid_data.py
+        run: python data/gallery/data_visualization/covid_19_mx/update_covid_data.py
           
       - name: commit files
         run: |
